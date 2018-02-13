@@ -120,3 +120,40 @@ Resources:
       NatGatewayId: !Ref 'NATGateway'
       DestinationCidrBlock: 0.0.0.0/0
 
+  # EC2 Instances
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Web Server Security Group'
+      VpcId: !Ref 'VPC'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: 'ami-97785bed'
+      KeyName: 'mwa-test'
+      InstanceType: 't2.nano'
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref 'WebServerSecurityGroup'
+          SubnetId: !Ref 'SubnetPublicAzA'
+      Tags:
+        - Key: Name
+          Value: MWA_WebServer
+
